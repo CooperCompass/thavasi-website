@@ -1,0 +1,11 @@
+# Landing site
+thavasi.coopercompass.com {
+	encode gzip
+	reverse_proxy web:3001
+}
+
+# Checklist app
+app.thavasi.coopercompass.com {
+	encode gzip
+	reverse_proxy thavasi-app:3000
+}
