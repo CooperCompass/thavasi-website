@@ -7,7 +7,7 @@ export function Hero({ onOpenEarlyAccess }) {
       <HeroScenes />
       <div className="hero-overlay" />
       <div className="hero-content">
-        <div className="eyebrow">THAVASI · BY COOPER COMPASS</div>
+        <div className="eyebrow">THAVASI · BY COOPER COMPASS · EST. 2025</div>
         <h1>
           Trade compliance,
           <br />

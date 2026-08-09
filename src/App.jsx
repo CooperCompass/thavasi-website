@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AskThavasi } from './components/AskThavasi'
 import { AdminLogin, AdminPanel, clearAdminToken, getAdminToken } from './components/Admin'
 import { Audience } from './components/Audience'
@@ -14,11 +14,26 @@ import { Verify } from './components/Verify'
 import { Workflow } from './components/Workflow'
 import { useTheme } from './hooks/useTheme'
 
+function isAdminPath() {
+  return window.location.pathname.replace(/\/+$/, '') === '/admin'
+}
+
 export default function App() {
   const { toggleTheme } = useTheme()
   const [modalOpen, setModalOpen] = useState(false)
-  const [adminLoginOpen, setAdminLoginOpen] = useState(false)
-  const [adminAuthed, setAdminAuthed] = useState(() => Boolean(getAdminToken()))
+  const [onAdminRoute, setOnAdminRoute] = useState(isAdminPath)
+  const [adminAuthed, setAdminAuthed] = useState(() => Boolean(getAdminToken()) && isAdminPath())
+
+  useEffect(() => {
+    const sync = () => {
+      const admin = isAdminPath()
+      setOnAdminRoute(admin)
+      if (admin && getAdminToken()) setAdminAuthed(true)
+      if (!admin) setAdminAuthed(false)
+    }
+    window.addEventListener('popstate', sync)
+    return () => window.removeEventListener('popstate', sync)
+  }, [])
 
   const openEarlyAccess = useCallback((e) => {
     e?.preventDefault?.()
@@ -27,27 +42,33 @@ export default function App() {
 
   const closeEarlyAccess = useCallback(() => setModalOpen(false), [])
 
-  const openAdmin = useCallback(() => {
-    if (getAdminToken()) {
-      setAdminAuthed(true)
-      return
-    }
-    setAdminLoginOpen(true)
+  const leaveAdmin = useCallback(() => {
+    clearAdminToken()
+    setAdminAuthed(false)
+    window.history.pushState({}, '', '/')
+    setOnAdminRoute(false)
   }, [])
 
-  if (adminAuthed) {
+  if (onAdminRoute && adminAuthed) {
     return (
       <>
-        <Header
-          onToggleTheme={toggleTheme}
-          onOpenEarlyAccess={openEarlyAccess}
-          onOpenAdmin={openAdmin}
-        />
-        <AdminPanel
-          onLogout={() => {
-            clearAdminToken()
-            setAdminAuthed(false)
+        <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
+        <AdminPanel onLogout={leaveAdmin} />
+      </>
+    )
+  }
+
+  if (onAdminRoute) {
+    return (
+      <>
+        <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
+        <AdminLogin
+          open
+          onClose={() => {
+            window.history.pushState({}, '', '/')
+            setOnAdminRoute(false)
           }}
+          onSuccess={() => setAdminAuthed(true)}
         />
       </>
     )
@@ -55,11 +76,7 @@ export default function App() {
 
   return (
     <>
-      <Header
-        onToggleTheme={toggleTheme}
-        onOpenEarlyAccess={openEarlyAccess}
-        onOpenAdmin={openAdmin}
-      />
+      <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
       <main>
         <Hero onOpenEarlyAccess={openEarlyAccess} />
         <Problem />
@@ -73,14 +90,6 @@ export default function App() {
       </main>
       <Footer />
       <EarlyAccessModal open={modalOpen} onClose={closeEarlyAccess} />
-      <AdminLogin
-        open={adminLoginOpen}
-        onClose={() => setAdminLoginOpen(false)}
-        onSuccess={() => {
-          setAdminLoginOpen(false)
-          setAdminAuthed(true)
-        }}
-      />
     </>
   )
 }

@@ -1,16 +1,7 @@
 import brandIcon from '../assets/brand-icon.png'
 import { useScrollHeader } from '../hooks/useScrollHeader'
 
-function AdminIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" />
-      <path d="M9.5 12l1.8 1.8L15 10" />
-    </svg>
-  )
-}
-
-export function Header({ onToggleTheme, onOpenEarlyAccess, onOpenAdmin }) {
+export function Header({ onToggleTheme, onOpenEarlyAccess }) {
   const floating = useScrollHeader(60)
 
   return (
@@ -44,15 +35,6 @@ export function Header({ onToggleTheme, onOpenEarlyAccess, onOpenAdmin }) {
               <circle cx="12" cy="12" r="4" />
               <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
             </svg>
-          </button>
-          <button
-            type="button"
-            className="theme-toggle admin-icon-btn"
-            aria-label="Admin"
-            title="Admin"
-            onClick={onOpenAdmin}
-          >
-            <AdminIcon />
           </button>
           <button
             type="button"
