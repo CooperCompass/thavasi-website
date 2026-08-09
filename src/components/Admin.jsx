@@ -80,7 +80,6 @@ export function AdminLogin({ open, onClose, onSuccess }) {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="system@coopercompass.com"
               disabled={loading}
             />
           </div>
