@@ -1,17 +1,30 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { closeDb, connectDb, getAccessRequestsCollection } from './db.js'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 3001)
 const LANDING_URL = process.env.LANDING_URL || 'http://localhost:5173'
+const DIST = path.join(__dirname, '..', 'dist')
 
 const app = express()
 
+const allowedOrigins = [
+  LANDING_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean)
+
 app.use(
   cors({
-    origin: [LANDING_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
-    methods: ['POST', 'OPTIONS'],
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+      return cb(null, false)
+    },
+    methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
   }),
 )
@@ -62,11 +75,19 @@ app.post('/api/access-requests', async (req, res) => {
   }
 })
 
+app.use(express.static(DIST))
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next()
+  res.sendFile(path.join(DIST, 'index.html'), (err) => {
+    if (err) next(err)
+  })
+})
+
 await connectDb()
-console.log(`MongoDB connected — collection: access_requests`)
+console.log('MongoDB connected — collection: access_requests')
 
 const server = app.listen(PORT, () => {
-  console.log(`Landing API listening on :${PORT}`)
+  console.log(`Thavasi website listening on :${PORT}`)
 })
 
 const shutdown = async () => {

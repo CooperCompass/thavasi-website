@@ -1,7 +1,5 @@
 name: Deploy
 
-# Self-hosted runner on the VPS. Full stack: nginx + API + MongoDB.
-
 on:
   push:
     branches: [main]
@@ -20,17 +18,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Sync checkout into ${{ env.APP_DIR }}
+      - name: Sync into ${{ env.APP_DIR }}
         run: |
           rsync -a --delete \
             --exclude='.git' \
             --exclude='node_modules' --exclude='**/node_modules' \
             --exclude='dist' --exclude='**/dist' \
-            --exclude='deploy/.env' \
+            --exclude='.env' \
             "${GITHUB_WORKSPACE}/" "${APP_DIR}/"
 
-      - name: Deploy stack
+      - name: Build & start containers
         run: |
-          cd "${APP_DIR}/deploy"
+          cd "${APP_DIR}"
           [ -f .env ] || cp .env.example .env
-          ./deploy.sh
+          ./deploy/deploy.sh

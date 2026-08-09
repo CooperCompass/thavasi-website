@@ -1,0 +1,36 @@
+name: thavasi-website
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_URL: same-origin
+    image: thavasi-website:latest
+    container_name: thavasi-website
+    restart: unless-stopped
+    ports:
+      - '${HOST_PORT:-80}:3001'
+    environment:
+      PORT: 3001
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB: thavasi_landing
+      LANDING_URL: ${LANDING_URL:-http://localhost}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:7
+    container_name: thavasi-website-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo_data:

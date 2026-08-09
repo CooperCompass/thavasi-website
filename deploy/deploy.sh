@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# Build images and start the full thavasi-website stack.
+# Deploy thavasi-website on this machine (run from repo root or deploy/).
 set -euo pipefail
-cd "$(dirname "$0")"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
 
-[ -f .env ] || { echo "deploy/.env missing — copy .env.example first."; exit 1; }
+if [ ! -f .env ]; then
+  cp .env.example .env
+  echo "Created .env from .env.example — edit LANDING_URL / HOST_PORT if needed."
+fi
 
-echo "==> Building images"
-docker compose build
-
-echo "==> Starting services"
-docker compose up -d
+echo "==> Building & starting thavasi-website"
+docker compose up -d --build
 
 echo "==> Status"
 docker compose ps
-echo "Deploy complete."
+echo "Health: curl -s http://127.0.0.1:${HOST_PORT:-80}/health"
