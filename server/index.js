@@ -4,6 +4,11 @@ import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { closeDb, connectDb, getAccessRequestsCollection } from './db.js'
+import {
+  adminAuthMiddleware,
+  issueAdminToken,
+  verifyAdminCredentials,
+} from './adminAuth.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 3001)
@@ -25,7 +30,7 @@ app.use(
       return cb(null, false)
     },
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 )
 app.use(express.json({ limit: '32kb' }))
@@ -72,6 +77,38 @@ app.post('/api/access-requests', async (req, res) => {
   } catch (err) {
     console.error('Failed to save access request:', err)
     res.status(500).json({ error: 'Failed to submit. Please try again.' })
+  }
+})
+
+app.post('/api/admin/login', (req, res) => {
+  const email = req.body?.email
+  const password = req.body?.password
+  if (!verifyAdminCredentials(email, password)) {
+    res.status(401).json({ error: 'Invalid email or password.' })
+    return
+  }
+  res.json({ ok: true, token: issueAdminToken() })
+})
+
+app.get('/api/admin/access-requests', adminAuthMiddleware, async (_req, res) => {
+  try {
+    const col = getAccessRequestsCollection()
+    const rows = await col.find({}).sort({ createdAt: -1 }).limit(500).toArray()
+    res.json({
+      requests: rows.map((r) => ({
+        id: String(r._id),
+        fullName: r.fullName,
+        firmName: r.firmName,
+        designation: r.designation,
+        city: r.city,
+        email: r.email,
+        status: r.status || 'new',
+        createdAt: r.createdAt,
+      })),
+    })
+  } catch (err) {
+    console.error('Failed to list access requests:', err)
+    res.status(500).json({ error: 'Failed to load requests.' })
   }
 })
 

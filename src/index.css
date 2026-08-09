@@ -1099,3 +1099,94 @@ footer {
     transition: none !important;
   }
 }
+
+/* ---------- ADMIN ---------- */
+.admin-login-form {
+  margin-top: 18px;
+}
+
+.admin-login-box {
+  max-width: 440px;
+}
+
+.admin-panel {
+  min-height: 100vh;
+  padding: 120px 0 80px;
+  background: var(--bg);
+}
+
+.admin-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.admin-panel-head h2 {
+  font-size: clamp(28px, 3.6vw, 40px);
+  margin-top: 10px;
+}
+
+.admin-panel-head p {
+  margin-top: 8px;
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+.admin-muted {
+  color: var(--text-soft);
+  font-size: 14.5px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.admin-table th {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-soft);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table a {
+  color: var(--sand);
+  font-weight: 600;
+}
+
+.admin-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: rgba(214, 178, 123, 0.12);
+  color: var(--sand);
+}
+

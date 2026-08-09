@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { AskThavasi } from './components/AskThavasi'
+import { AdminLogin, AdminPanel, clearAdminToken, getAdminToken } from './components/Admin'
 import { Audience } from './components/Audience'
 import { Capabilities } from './components/Capabilities'
 import { EarlyAccess } from './components/EarlyAccess'
@@ -16,6 +17,8 @@ import { useTheme } from './hooks/useTheme'
 export default function App() {
   const { toggleTheme } = useTheme()
   const [modalOpen, setModalOpen] = useState(false)
+  const [adminLoginOpen, setAdminLoginOpen] = useState(false)
+  const [adminAuthed, setAdminAuthed] = useState(() => Boolean(getAdminToken()))
 
   const openEarlyAccess = useCallback((e) => {
     e?.preventDefault?.()
@@ -24,9 +27,39 @@ export default function App() {
 
   const closeEarlyAccess = useCallback(() => setModalOpen(false), [])
 
+  const openAdmin = useCallback(() => {
+    if (getAdminToken()) {
+      setAdminAuthed(true)
+      return
+    }
+    setAdminLoginOpen(true)
+  }, [])
+
+  if (adminAuthed) {
+    return (
+      <>
+        <Header
+          onToggleTheme={toggleTheme}
+          onOpenEarlyAccess={openEarlyAccess}
+          onOpenAdmin={openAdmin}
+        />
+        <AdminPanel
+          onLogout={() => {
+            clearAdminToken()
+            setAdminAuthed(false)
+          }}
+        />
+      </>
+    )
+  }
+
   return (
     <>
-      <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
+      <Header
+        onToggleTheme={toggleTheme}
+        onOpenEarlyAccess={openEarlyAccess}
+        onOpenAdmin={openAdmin}
+      />
       <main>
         <Hero onOpenEarlyAccess={openEarlyAccess} />
         <Problem />
@@ -40,6 +73,14 @@ export default function App() {
       </main>
       <Footer />
       <EarlyAccessModal open={modalOpen} onClose={closeEarlyAccess} />
+      <AdminLogin
+        open={adminLoginOpen}
+        onClose={() => setAdminLoginOpen(false)}
+        onSuccess={() => {
+          setAdminLoginOpen(false)
+          setAdminAuthed(true)
+        }}
+      />
     </>
   )
 }

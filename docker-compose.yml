@@ -16,6 +16,9 @@ services:
       MONGODB_URI: mongodb://mongo:27017
       MONGODB_DB: thavasi_landing
       LANDING_URL: ${LANDING_URL:-http://localhost}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-system@coopercompass.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_SECRET: ${ADMIN_SECRET:-thavasi-landing-admin-secret}
     depends_on:
       mongo:
         condition: service_healthy
