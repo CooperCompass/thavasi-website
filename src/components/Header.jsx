@@ -1,21 +1,59 @@
+import { useEffect, useState } from 'react'
 import brandIcon from '../assets/brand-icon.png'
 import { useScrollHeader } from '../hooks/useScrollHeader'
 
+const NAV_LINKS = [
+  { href: '#platform', label: 'Platform' },
+  { href: '#verify', label: 'Verify' },
+  { href: '#ask', label: 'Ask Thavasi' },
+  { href: '#who', label: "Who it's for" },
+]
+
 export function Header({ onToggleTheme, onOpenEarlyAccess }) {
   const floating = useScrollHeader(60)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    const onResize = () => {
+      if (window.matchMedia('(min-width: 861px)').matches) setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('resize', onResize)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('resize', onResize)
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
+
+  const closeMenu = () => setMenuOpen(false)
+
+  const handleEarlyAccess = (e) => {
+    closeMenu()
+    onOpenEarlyAccess?.(e)
+  }
 
   return (
-    <header id="siteHeader" className={floating ? 'floating' : undefined}>
+    <header
+      id="siteHeader"
+      className={[floating ? 'floating' : '', menuOpen ? 'menu-open' : ''].filter(Boolean).join(' ') || undefined}
+    >
       <div className="nav-inner">
-        <div className="brand">
+        <a href="#top" className="brand" onClick={closeMenu}>
           <img src={brandIcon} alt="" className="brand-icon" />
           Thavasi
-        </div>
-        <nav className="navlinks">
-          <a href="#platform">Platform</a>
-          <a href="#verify">Verify</a>
-          <a href="#ask">Ask Thavasi</a>
-          <a href="#who">Who it&apos;s for</a>
+        </a>
+        <nav className="navlinks" aria-label="Primary">
+          {NAV_LINKS.map((link) => (
+            <a key={link.href} href={link.href}>
+              {link.label}
+            </a>
+          ))}
         </nav>
         <div className="navright">
           <button
@@ -38,26 +76,71 @@ export function Header({ onToggleTheme, onOpenEarlyAccess }) {
           </button>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary nav-cta"
             style={{ padding: '10px 20px' }}
-            onClick={onOpenEarlyAccess}
+            onClick={handleEarlyAccess}
           >
             Request early access
           </button>
-          <button type="button" className="menu-btn" aria-label="Menu">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
+          <button
+            type="button"
+            className="menu-btn"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
+
+      <div
+        id="mobile-nav"
+        className={`mobile-nav${menuOpen ? ' open' : ''}`}
+        aria-hidden={!menuOpen}
+      >
+        <nav className="mobile-nav-links" aria-label="Mobile">
+          {NAV_LINKS.map((link) => (
+            <a key={link.href} href={link.href} onClick={closeMenu}>
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <button type="button" className="btn btn-primary mobile-nav-cta" onClick={handleEarlyAccess}>
+          Request early access
+        </button>
+      </div>
+      {menuOpen && (
+        <button
+          type="button"
+          className="mobile-nav-backdrop"
+          aria-label="Close menu"
+          onClick={closeMenu}
+        />
+      )}
     </header>
   )
 }

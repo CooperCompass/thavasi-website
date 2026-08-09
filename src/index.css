@@ -262,6 +262,17 @@ header:not(.floating)::before {
   border: none;
   color: inherit;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.mobile-nav,
+.mobile-nav-backdrop {
+  display: none;
 }
 
 /* ---------- HERO ---------- */
@@ -1028,12 +1039,6 @@ section.tight {
   line-height: 1;
 }
 
-@media (max-width: 640px) {
-  .modal-box .ea-form {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ---------- FOOTER ---------- */
 footer {
   background: var(--surface-dark);
@@ -1061,13 +1066,106 @@ footer {
   text-align: right;
 }
 
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 860px) {
   .navlinks {
     display: none;
   }
 
   .menu-btn {
+    display: inline-flex;
+  }
+
+  .nav-cta {
+    display: none;
+  }
+
+  .nav-inner {
+    padding: 0 18px;
+  }
+
+  header.floating .nav-inner {
+    padding: 8px 10px 8px 16px;
+    border-radius: 22px;
+  }
+
+  header.menu-open {
+    padding-top: 14px;
+  }
+
+  header.menu-open .nav-inner {
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 8px 10px 8px 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 18px;
+    right: 18px;
+    z-index: 2;
+    padding: 18px;
+    border-radius: 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .mobile-nav.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-nav-links a {
     display: block;
+    padding: 12px 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .mobile-nav-links a:hover,
+  .mobile-nav-links a:focus-visible {
+    background: var(--bg);
+  }
+
+  .mobile-nav-cta {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .mobile-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    border: none;
+    background: rgba(8, 8, 7, 0.35);
+    cursor: pointer;
   }
 
   .two-cards,
@@ -1079,6 +1177,10 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .split {
+    gap: 32px;
+  }
+
   .split.reverse .split-copy,
   .split.reverse .split-panel {
     order: 0;
@@ -1088,8 +1190,160 @@ footer {
     padding: 90px 0;
   }
 
+  section.tight {
+    padding: 72px 0;
+  }
+
   .wrap {
-    padding: 0 22px;
+    padding: 0 18px;
+  }
+
+  .hero-content {
+    padding: 110px 18px 64px;
+  }
+
+  .hero-content .eyebrow {
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(32px, 9vw, 52px);
+    margin-bottom: 18px;
+  }
+
+  .hero-content p.sub {
+    font-size: 15.5px;
+  }
+
+  .hero-tagline {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .hero-ctas {
+    gap: 12px;
+  }
+
+  .hero-ctas .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .section-head {
+    margin-bottom: 36px;
+  }
+
+  .flow-row {
+    margin: 36px 0 0;
+    padding: 20px;
+    gap: 10px;
+  }
+
+  .chip,
+  .node-thavasi {
+    white-space: normal;
+  }
+
+  .platform-card,
+  .aud-card {
+    padding: 28px;
+    min-height: 0;
+  }
+
+  .cap-card {
+    padding: 28px 22px;
+  }
+
+  .wf-point {
+    padding: 22px;
+  }
+
+  .wf-line {
+    margin-top: 36px;
+  }
+
+  .issue-main .rows {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .issue-main .links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .review-panel,
+  .qa-panel {
+    padding: 20px;
+  }
+
+  .modal-overlay {
+    padding: 16px;
+    align-items: flex-end;
+  }
+
+  .modal-box {
+    padding: 28px 20px 24px;
+    border-radius: 16px;
+    max-height: min(92vh, 100%);
+  }
+
+  .modal-box .ea-form {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-box h3 {
+    font-size: 22px;
+    padding-right: 28px;
+  }
+
+  .footer-right {
+    text-align: left;
+  }
+
+  .admin-panel {
+    padding: 100px 0 60px;
+  }
+
+  .admin-panel-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding-top: 14px;
+  }
+
+  .brand {
+    font-size: 17px;
+  }
+
+  .hero {
+    min-height: 88vh;
+  }
+
+  .btn {
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+
+  .credibility {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .platform-card h3,
+  .aud-card h3 {
+    font-size: 22px;
+  }
+
+  .ea-submit .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 

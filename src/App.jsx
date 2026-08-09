@@ -77,7 +77,7 @@ export default function App() {
   return (
     <>
       <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
-      <main>
+      <main id="top">
         <Hero onOpenEarlyAccess={openEarlyAccess} />
         <Problem />
         <Platform onOpenEarlyAccess={openEarlyAccess} />
