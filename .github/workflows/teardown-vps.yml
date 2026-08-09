@@ -1,0 +1,16 @@
+name: Teardown legacy VPS stacks
+
+# One-time: stop claykicker / legacy thavasi containers on the VPS.
+# Run manually from GitHub Actions → Run workflow.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  teardown:
+    runs-on: [self-hosted, prod]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stop legacy stacks
+        run: bash deploy/teardown-vps.sh

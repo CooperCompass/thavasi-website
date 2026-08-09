@@ -1,9 +1,6 @@
 name: Deploy
 
-# Builds the static landing and writes to /opt/thavasi-website/dist (nginx on the
-# claykicker stack mounts that path for thavasi.coopercompass.com).
-#
-# Uses the same self-hosted runner as clearmateai-v1 (on the VPS).
+# Self-hosted runner on the VPS. Full stack: nginx + API + MongoDB.
 
 on:
   push:
@@ -16,7 +13,6 @@ concurrency:
 
 env:
   APP_DIR: /opt/thavasi-website
-  VITE_API_URL: https://api.coopercompass.com
 
 jobs:
   deploy:
@@ -30,12 +26,11 @@ jobs:
             --exclude='.git' \
             --exclude='node_modules' --exclude='**/node_modules' \
             --exclude='dist' --exclude='**/dist' \
+            --exclude='deploy/.env' \
             "${GITHUB_WORKSPACE}/" "${APP_DIR}/"
 
-      - name: Build landing
+      - name: Deploy stack
         run: |
-          cd "${APP_DIR}" && VITE_API_URL="${VITE_API_URL}" ./deploy/deploy.sh
-
-      - name: Reload nginx
-        run: |
-          cd /opt/claykicker/deploy && docker compose exec -T nginx nginx -s reload
+          cd "${APP_DIR}/deploy"
+          [ -f .env ] || cp .env.example .env
+          ./deploy.sh
