@@ -1,0 +1,41 @@
+name: Deploy
+
+# Builds the static landing and writes to /opt/thavasi-website/dist (nginx on the
+# claykicker stack mounts that path for thavasi.coopercompass.com).
+#
+# Uses the same self-hosted runner as clearmateai-v1 (on the VPS).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-thavasi-website
+  cancel-in-progress: false
+
+env:
+  APP_DIR: /opt/thavasi-website
+  VITE_API_URL: https://api.coopercompass.com
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, prod]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync checkout into ${{ env.APP_DIR }}
+        run: |
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='node_modules' --exclude='**/node_modules' \
+            --exclude='dist' --exclude='**/dist' \
+            "${GITHUB_WORKSPACE}/" "${APP_DIR}/"
+
+      - name: Build landing
+        run: |
+          cd "${APP_DIR}" && VITE_API_URL="${VITE_API_URL}" ./deploy/deploy.sh
+
+      - name: Reload nginx
+        run: |
+          cd /opt/claykicker/deploy && docker compose exec -T nginx nginx -s reload

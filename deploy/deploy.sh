@@ -1,9 +1,9 @@
+#!/usr/bin/env bash
 # Production build for thavasi.coopercompass.com
 #
 # On the VPS this writes to /opt/thavasi-website/dist (nginx mounts it read-only).
-# Locally it builds to ./dist in this repo.
+# Locally: ./deploy/deploy.sh ./dist
 
-#!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
