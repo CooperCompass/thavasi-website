@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { AskThavasi } from './components/AskThavasi'
-import { AdminLogin, AdminPanel, clearAdminToken, getAdminToken } from './components/Admin'
 import { Audience } from './components/Audience'
 import { Capabilities } from './components/Capabilities'
 import { EarlyAccess } from './components/EarlyAccess'
@@ -14,26 +13,9 @@ import { Verify } from './components/Verify'
 import { Workflow } from './components/Workflow'
 import { useTheme } from './hooks/useTheme'
 
-function isAdminPath() {
-  return window.location.pathname.replace(/\/+$/, '') === '/admin'
-}
-
 export default function App() {
   const { toggleTheme } = useTheme()
   const [modalOpen, setModalOpen] = useState(false)
-  const [onAdminRoute, setOnAdminRoute] = useState(isAdminPath)
-  const [adminAuthed, setAdminAuthed] = useState(() => Boolean(getAdminToken()) && isAdminPath())
-
-  useEffect(() => {
-    const sync = () => {
-      const admin = isAdminPath()
-      setOnAdminRoute(admin)
-      if (admin && getAdminToken()) setAdminAuthed(true)
-      if (!admin) setAdminAuthed(false)
-    }
-    window.addEventListener('popstate', sync)
-    return () => window.removeEventListener('popstate', sync)
-  }, [])
 
   const openEarlyAccess = useCallback((e) => {
     e?.preventDefault?.()
@@ -41,38 +23,6 @@ export default function App() {
   }, [])
 
   const closeEarlyAccess = useCallback(() => setModalOpen(false), [])
-
-  const leaveAdmin = useCallback(() => {
-    clearAdminToken()
-    setAdminAuthed(false)
-    window.history.pushState({}, '', '/')
-    setOnAdminRoute(false)
-  }, [])
-
-  if (onAdminRoute && adminAuthed) {
-    return (
-      <>
-        <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
-        <AdminPanel onLogout={leaveAdmin} />
-      </>
-    )
-  }
-
-  if (onAdminRoute) {
-    return (
-      <>
-        <Header onToggleTheme={toggleTheme} onOpenEarlyAccess={openEarlyAccess} />
-        <AdminLogin
-          open
-          onClose={() => {
-            window.history.pushState({}, '', '/')
-            setOnAdminRoute(false)
-          }}
-          onSuccess={() => setAdminAuthed(true)}
-        />
-      </>
-    )
-  }
 
   return (
     <>

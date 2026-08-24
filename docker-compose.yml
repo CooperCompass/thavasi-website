@@ -17,31 +17,14 @@ services:
       - '3001'
     environment:
       PORT: 3001
-      MONGODB_URI: mongodb://mongo:27017
-      MONGODB_DB: thavasi_landing
       LANDING_URL: ${LANDING_URL:-https://thavasi.coopercompass.com}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-system@coopercompass.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      ADMIN_SECRET: ${ADMIN_SECRET:-thavasi-landing-admin-secret}
-    depends_on:
-      mongo:
-        condition: service_healthy
+      # Early-access enquiries are owned by Thavasi Scrutiny (PostgreSQL) and reviewed
+      # in its admin UI. Reached by container name over the shared network; its nginx
+      # proxies /api to the FastAPI backend.
+      SCRUTINY_API_URL: ${SCRUTINY_API_URL:-http://thavasi-scrutiny-web/api/v1}
     networks:
       - thavasi-net
 
-  mongo:
-    image: mongo:7
-    container_name: thavasi-website-mongo
-    restart: unless-stopped
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - thavasi-net
 
   caddy:
     image: caddy:2
@@ -60,6 +43,5 @@ services:
       - thavasi-net
 
 volumes:
-  mongo_data:
   caddy_data:
   caddy_config:

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Deploy thavasi-website (landing + Caddy edge + Mongo).
+# Deploy thavasi-website (landing + Caddy edge). No database — early-access enquiries
+# are forwarded to the Thavasi Scrutiny API, which owns them in PostgreSQL.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -10,7 +11,9 @@ if [ ! -f .env ]; then
 fi
 
 echo "==> Building & starting thavasi-website"
-docker compose up -d --build
+# --remove-orphans: the mongo service was removed from this compose file; without
+# this flag its container lingers on the host after the database was retired.
+docker compose up -d --build --remove-orphans
 
 echo "==> Status"
 docker compose ps

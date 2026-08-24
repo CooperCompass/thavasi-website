@@ -1,5 +1,6 @@
 /**
- * API base for the landing-page backend (MongoDB access-requests).
+ * API base for the landing-page backend, which forwards early-access
+ * enquiries to the Thavasi Scrutiny API.
  * Default: same-origin /api (prod). Override with VITE_API_URL for local dev proxy target.
  */
 export function getApiBase() {
