@@ -1,3 +1,14 @@
+# Site blocks owned by other stacks on this host.
+#
+# Caddy's /config is a named volume, so files dropped in here survive both this
+# project's `rsync --delete` deploy and any recreation of the container. Without
+# this line, another stack's only options are to edit this file — which the next
+# deploy erases — or to take over ports 80 and 443, which this project needs.
+#
+# Caddy permits a single wildcard per glob, and a glob matching nothing is a
+# no-op — so this line does nothing until another stack drops a file in.
+import /config/sites/*.caddy
+
 # Landing site
 thavasi.coopercompass.com {
 	encode gzip
