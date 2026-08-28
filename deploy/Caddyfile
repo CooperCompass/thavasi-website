@@ -18,5 +18,5 @@ thavasi.coopercompass.com {
 # Checklist app
 app.thavasi.coopercompass.com {
 	encode gzip
-	reverse_proxy thavasi-app:3000
+	reverse_proxy thavasi-scrutiny-web:80
 }
